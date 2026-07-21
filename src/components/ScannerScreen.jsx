@@ -4,15 +4,44 @@ import { Html5Qrcode } from 'html5-qrcode'
 const SCANNER_ID = 'qr-scanner-region'
 const QR_BOX_SIZE = 260
 
-function ScannerScreen({ onResult, onCancel }) {
+const KNOWN_ERROR_NAMES = [
+  'NotAllowedError',
+  'NotFoundError',
+  'NotReadableError',
+  'OverconstrainedError',
+  'SecurityError',
+]
+
+function toErrorObject(err) {
+  if (err instanceof Error && KNOWN_ERROR_NAMES.includes(err.name)) return err
+
+  const message = typeof err === 'string' ? err : err?.message || JSON.stringify(err)
+  const matchedName = KNOWN_ERROR_NAMES.find((name) => message.includes(name))
+
+  const wrapped = new Error(message)
+  wrapped.name = matchedName || err?.name || 'UnknownError'
+  return wrapped
+}
+
+function ScannerScreen({ onResult, onCancel, onError }) {
   const onResultRef = useRef(onResult)
-  const onCancelRef = useRef(onCancel)
+  const onErrorRef = useRef(onError)
   onResultRef.current = onResult
-  onCancelRef.current = onCancel
+  onErrorRef.current = onError
 
   useEffect(() => {
     let cancelled = false
     let hasResult = false
+
+    if (!navigator.mediaDevices?.getUserMedia) {
+      onErrorRef.current(
+        Object.assign(new Error('เบราว์เซอร์นี้ไม่รองรับการเข้าถึงกล้อง (ต้องเป็น HTTPS หรือ localhost)'), {
+          name: 'SecurityError',
+        }),
+      )
+      return
+    }
+
     const scanner = new Html5Qrcode(SCANNER_ID)
 
     const startPromise = scanner.start(
@@ -30,8 +59,8 @@ function ScannerScreen({ onResult, onCancel }) {
       () => {},
     )
 
-    startPromise.catch(() => {
-      if (!cancelled) onCancelRef.current()
+    startPromise.catch((err) => {
+      if (!cancelled) onErrorRef.current(toErrorObject(err))
     })
 
     return () => {

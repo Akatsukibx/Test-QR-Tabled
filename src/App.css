@@ -185,6 +185,70 @@ body,
   max-width: 80vw;
 }
 
+/* Error screen */
+.error-screen {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: #450a0a;
+  color: #fff;
+  text-align: center;
+  padding: 24px;
+}
+
+.error-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #dc2626;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.error-label {
+  font-size: 1.3rem;
+  max-width: 500px;
+}
+
+.error-detail {
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  word-break: break-all;
+  max-width: 80vw;
+  font-size: 0.85rem;
+  opacity: 0.8;
+}
+
+.error-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.error-actions button {
+  padding: 10px 24px;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: none;
+  background: #fff;
+  color: #450a0a;
+  cursor: pointer;
+}
+
+.error-actions button.secondary {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: #fff;
+}
+
 /* Test QR generator screen */
 .generator-screen {
   height: 100%;
