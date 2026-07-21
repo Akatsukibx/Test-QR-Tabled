@@ -61,7 +61,19 @@ function ScannerScreen({ onResult, onCancel, onError }) {
 
     const startPromise = scanner.start(
       { facingMode: 'user' },
-      { fps: 10, qrbox: { width: QR_BOX_SIZE, height: QR_BOX_SIZE } },
+      {
+        fps: 15,
+        qrbox: { width: QR_BOX_SIZE, height: QR_BOX_SIZE },
+        // Front cameras often default to a low-res stream (e.g. 640x480),
+        // which makes small/detailed QR codes hard to decode. Ask for the
+        // highest resolution the camera can actually deliver.
+        videoConstraints: {
+          facingMode: 'user',
+          width: { ideal: 1920 },
+          height: { ideal: 1080 },
+        },
+        useBarCodeDetectorIfSupported: true,
+      },
       (decodedText) => {
         if (hasResult || cancelled) return
         hasResult = true
