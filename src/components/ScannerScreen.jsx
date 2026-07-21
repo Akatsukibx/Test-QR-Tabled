@@ -44,17 +44,28 @@ function ScannerScreen({ onResult, onCancel, onError }) {
 
     const scanner = new Html5Qrcode(SCANNER_ID)
 
+    // Ensures the camera stream is only ever stopped once — calling
+    // Html5Qrcode.stop() twice concurrently (once from the success handler,
+    // once from unmount cleanup) leaves the camera hardware not fully
+    // released, so the next scan attempt fails to reacquire it.
+    let stopping = null
+    const stopScanner = () => {
+      if (!stopping) {
+        stopping = scanner
+          .stop()
+          .then(() => scanner.clear())
+          .catch(() => {})
+      }
+      return stopping
+    }
+
     const startPromise = scanner.start(
       { facingMode: 'user' },
       { fps: 10, qrbox: { width: QR_BOX_SIZE, height: QR_BOX_SIZE } },
       (decodedText) => {
         if (hasResult || cancelled) return
         hasResult = true
-        scanner
-          .stop()
-          .then(() => scanner.clear())
-          .catch(() => {})
-        onResultRef.current(decodedText)
+        stopScanner().then(() => onResultRef.current(decodedText))
       },
       () => {},
     )
@@ -65,10 +76,7 @@ function ScannerScreen({ onResult, onCancel, onError }) {
 
     return () => {
       cancelled = true
-      startPromise
-        .then(() => scanner.stop())
-        .then(() => scanner.clear())
-        .catch(() => {})
+      startPromise.then(() => stopScanner()).catch(() => {})
     }
   }, [])
 
