@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 
-const AUTO_RETURN_MS = 8000
+const AUTO_RETURN_MS = 60000
 
 const FIELD_LABELS = {
   bookingId: 'รหัสการจอง',
