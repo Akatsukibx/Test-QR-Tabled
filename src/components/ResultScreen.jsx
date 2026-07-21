@@ -6,17 +6,21 @@ const FIELD_LABELS = {
   bookingId: 'รหัสการจอง',
   roomName: 'ห้อง',
   guestName: 'ผู้จอง',
+  purpose: 'หัวข้อ',
   date: 'วันที่',
   startTime: 'เวลาเริ่ม',
   endTime: 'เวลาสิ้นสุด',
+  attendees: 'จำนวนผู้เข้าร่วม',
 }
 
 const FIELD_ORDER = [
   'roomName',
   'guestName',
+  'purpose',
   'date',
   'startTime',
   'endTime',
+  'attendees',
   'bookingId',
 ]
 
