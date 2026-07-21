@@ -185,6 +185,47 @@ body,
   max-width: 80vw;
 }
 
+.booking-card {
+  width: min(90vw, 420px);
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 8px 20px;
+}
+
+.booking-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.booking-row:last-child {
+  border-bottom: none;
+}
+
+.booking-key {
+  opacity: 0.75;
+  white-space: nowrap;
+}
+
+.booking-value {
+  font-weight: 600;
+  text-align: right;
+  word-break: break-word;
+}
+
+.result-done {
+  margin-top: 16px;
+  padding: 12px 40px;
+  font-size: 1.05rem;
+  border-radius: 8px;
+  border: none;
+  background: #fff;
+  color: #052e16;
+  cursor: pointer;
+}
+
 /* Error screen */
 .error-screen {
   height: 100%;
@@ -261,12 +302,14 @@ body,
   background: #f9fafb;
 }
 
-.generator-screen input {
+.generator-screen textarea {
   padding: 10px 14px;
-  font-size: 1rem;
+  font-size: 0.85rem;
+  font-family: ui-monospace, Consolas, monospace;
   border-radius: 8px;
   border: 1px solid #d1d5db;
-  width: min(80vw, 320px);
+  width: min(85vw, 360px);
+  resize: vertical;
 }
 
 .generated-qr {
@@ -283,4 +326,10 @@ body,
   background: #2563eb;
   color: #fff;
   cursor: pointer;
+}
+
+.generator-screen button.secondary {
+  background: transparent;
+  border: 1px solid #d1d5db;
+  color: #374151;
 }
