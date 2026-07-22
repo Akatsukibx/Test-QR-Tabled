@@ -2,7 +2,6 @@ import { useEffect, useRef } from 'react'
 import { Html5Qrcode } from 'html5-qrcode'
 
 const SCANNER_ID = 'qr-scanner-region'
-const QR_BOX_SIZE = 260
 
 const KNOWN_ERROR_NAMES = [
   'NotAllowedError',
@@ -63,7 +62,14 @@ function ScannerScreen({ onResult, onCancel, onError }) {
       { facingMode: 'user' },
       {
         fps: 15,
-        qrbox: { width: QR_BOX_SIZE, height: QR_BOX_SIZE },
+        // No `qrbox`: html5-qrcode maps its scan-crop region using a plain
+        // videoWidth/clientWidth stretch ratio, which assumes the <video>
+        // element is stretched to fit (object-fit: fill). Our CSS instead
+        // uses `object-fit: cover` for a fullscreen look, which crops
+        // instead of stretching — so a small qrbox ends up sampling the
+        // wrong part of the frame and never sees the code the user is
+        // aiming at (our on-screen brackets are purely a visual guide).
+        // Scanning the full frame sidesteps that mismatch entirely.
         // Front cameras often default to a low-res stream (e.g. 640x480),
         // which makes small/detailed QR codes hard to decode. Ask for the
         // highest resolution the camera can actually deliver.
