@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { Html5Qrcode } from 'html5-qrcode'
+import { Html5Qrcode, Html5QrcodeSupportedFormats } from 'html5-qrcode'
 
 const SCANNER_ID = 'qr-scanner-region'
 
@@ -41,7 +41,13 @@ function ScannerScreen({ onResult, onCancel, onError }) {
       return
     }
 
-    const scanner = new Html5Qrcode(SCANNER_ID)
+    // Restrict decoding to QR codes only — checking every barcode format
+    // (EAN, Code128, PDF417, ...) on every frame is unnecessary work that
+    // slows down detection.
+    const scanner = new Html5Qrcode(SCANNER_ID, {
+      formatsToSupport: [Html5QrcodeSupportedFormats.QR_CODE],
+      useBarCodeDetectorIfSupported: true,
+    })
 
     // Ensures the camera stream is only ever stopped once — calling
     // Html5Qrcode.stop() twice concurrently (once from the success handler,
@@ -61,7 +67,7 @@ function ScannerScreen({ onResult, onCancel, onError }) {
     const startPromise = scanner.start(
       { facingMode: 'user' },
       {
-        fps: 15,
+        fps: 20,
         // No `qrbox`: html5-qrcode maps its scan-crop region using a plain
         // videoWidth/clientWidth stretch ratio, which assumes the <video>
         // element is stretched to fit (object-fit: fill). Our CSS instead
@@ -70,15 +76,13 @@ function ScannerScreen({ onResult, onCancel, onError }) {
         // wrong part of the frame and never sees the code the user is
         // aiming at (our on-screen brackets are purely a visual guide).
         // Scanning the full frame sidesteps that mismatch entirely.
-        // Front cameras often default to a low-res stream (e.g. 640x480),
-        // which makes small/detailed QR codes hard to decode. Ask for the
-        // highest resolution the camera can actually deliver.
+        // 720p is enough detail to read a QR code and decodes noticeably
+        // faster per frame than 1080p when scanning the full frame.
         videoConstraints: {
           facingMode: 'user',
-          width: { ideal: 1920 },
-          height: { ideal: 1080 },
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
         },
-        useBarCodeDetectorIfSupported: true,
       },
       (decodedText) => {
         if (hasResult || cancelled) return
