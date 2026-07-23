@@ -2,12 +2,54 @@ import { useEffect, useState } from 'react'
 import QRCode from 'qrcode'
 
 const ROOMS = [
-  'ห้องประชุมใหญ่ ชั้น 1',
-  'ห้องประชุม 101',
-  'ห้องประชุม 102',
-  'ห้องประชุมผู้บริหาร',
-  'ห้อง Training A',
-  'ห้อง Board Room',
+  {
+    name: 'ห้องประชุมใหญ่ ชั้น 1',
+    haEntities: {
+      lock: 'lock.hall_1_door',
+      light: 'light.hall_1',
+      climate: 'climate.hall_1_ac',
+    },
+  },
+  {
+    name: 'ห้องประชุม 101',
+    haEntities: {
+      lock: 'lock.room_101_door',
+      light: 'light.room_101',
+      climate: 'climate.room_101_ac',
+    },
+  },
+  {
+    name: 'ห้องประชุม 102',
+    haEntities: {
+      lock: 'lock.room_102_door',
+      light: 'light.room_102',
+      climate: 'climate.room_102_ac',
+    },
+  },
+  {
+    name: 'ห้องประชุมผู้บริหาร',
+    haEntities: {
+      lock: 'lock.exec_room_door',
+      light: ['light.exec_room_main', 'light.exec_room_lamp'],
+      climate: 'climate.exec_room_ac',
+    },
+  },
+  {
+    name: 'ห้อง Training A',
+    haEntities: {
+      lock: 'lock.training_a_door',
+      light: 'light.training_a',
+      climate: 'climate.training_a_ac',
+    },
+  },
+  {
+    name: 'ห้อง Board Room',
+    haEntities: {
+      lock: 'lock.board_room_door',
+      light: ['light.board_room_main', 'light.board_room_lamp'],
+      climate: 'climate.board_room_ac',
+    },
+  },
 ]
 
 const GUEST_NAMES = [
@@ -54,16 +96,18 @@ function generateRandomBooking() {
 
   const startHour = pick(START_HOURS)
   const durationHours = pick([1, 1, 2])
+  const room = pick(ROOMS)
 
   const booking = {
     bookingId: `BK-${bookingDate.getFullYear()}${pad(bookingDate.getMonth() + 1)}${pad(bookingDate.getDate())}-${randomInt(100, 999)}`,
-    roomName: pick(ROOMS),
+    roomName: room.name,
     guestName: pick(GUEST_NAMES),
     purpose: pick(PURPOSES),
     date: formatDate(bookingDate),
     startTime: `${pad(startHour)}:00`,
     endTime: `${pad(startHour + durationHours)}:00`,
     attendees: randomInt(2, 20),
+    haEntities: room.haEntities,
   }
 
   return JSON.stringify(booking, null, 2)
